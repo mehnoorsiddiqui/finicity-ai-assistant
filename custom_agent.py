@@ -23,7 +23,7 @@ pd.set_option('display.max_columns', None)
 memory_key = "chat_history"
 memory = ConversationBufferWindowMemory(k=4,memory_key=memory_key,return_messages=True) 
 # ConversationBufferMemory(memory_key=memory_key, return_messages=True)
-llm = ChatOpenAI(temperature=0,model='gpt-4-0613')
+llm = ChatOpenAI(temperature=0,model='gpt-4-0613', max_tokens=1500)
 # embeddings = OpenAIEmbeddings()
 # loader = CSVLoader(file_path="merged_data.csv")
 # documents = loader.load()
