@@ -48,7 +48,7 @@ with st.sidebar:
     partner_secret = st.text_input("Partner Secret", "Enter partner secret...")
     finicity_app_key = st.text_input('Finicity-App-Key', 'Enter finicity app key...')
           
-    if st.button(":white[Get Auth token]"):        
+    if st.button(":white[Generate Auth token]"):        
         if partner_id and partner_secret and finicity_app_key != None:
 
             headers = {
@@ -64,17 +64,19 @@ with st.sidebar:
                 token = createToken.json()["token"]
                 print(f"Token: {token}")
                 if token != None:
-                    # token is valid for 2 hours but as finicity best practice generate new token after 90 minutes 
-                    st.text(token)
+                    # token is valid for 2 hours but as finicity best practice generate new token after 90 minutes                    
                     current_time = int(time.time())
                     token_expiry_time = current_time + (90 * 60) 
-                    st.session_state.token = {'value': token, 'expiry': token_expiry_time}                
+                    st.session_state.token = {'value': token, 'expiry': token_expiry_time} 
+                    messageboard.success('Auth token generated successfully', icon="🎉") 
+                    time.sleep(3)
+                    messageboard.empty()                
             else:
                 messageboard.error("Authentication failed, please try again", icon ='🚨') 
                 time.sleep(3)
                 messageboard.empty() 
     
-    st.markdown("""<style> div.st-emotion-cache-1b531ko e1nzilvr5 > p { color: #ffffff }""", unsafe_allow_html=True)
+    st.markdown("""  <style> div.st-emotion-cache-hsn27d e1nzilvr5>p { color: #ffffff }  <style> """, unsafe_allow_html=True)
 
     st.markdown("""
         <style> 
