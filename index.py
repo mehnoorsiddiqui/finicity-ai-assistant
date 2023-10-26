@@ -162,7 +162,7 @@ with st.sidebar:
                     time.sleep(3)
                     messageboard.empty() 
         else:
-            messageboard.warning("To use this application, please get auth token...") 
+            messageboard.warning("To use this application, please generate auth token...") 
             time.sleep(3)
             messageboard.empty() 
 
@@ -208,7 +208,7 @@ for message in st.session_state.messages:
 if user_input := st.chat_input("Plot a bar graph of credit and debit amount"):
     
     if not check_token(st.session_state.token):
-        messageboard.warning("To use this application, please login...") 
+        messageboard.warning("To use this application, please generate auth token...") 
         time.sleep(3)
         messageboard.empty() 
     elif os.stat("finicity_data.csv").st_size == 0:
