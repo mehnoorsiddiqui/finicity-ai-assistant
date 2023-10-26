@@ -74,7 +74,7 @@ with st.sidebar:
                 time.sleep(3)
                 messageboard.empty() 
     
-    st.markdown("""<style> p { color: #ffffff }""", unsafe_allow_html=True)
+    st.markdown("""<style> div.st-emotion-cache-1b531ko e1nzilvr5 > p { color: #ffffff }""", unsafe_allow_html=True)
 
     st.markdown("""
         <style> 
