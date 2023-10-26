@@ -1,5 +1,5 @@
 import streamlit as st
-st.set_page_config(page_title="Payments NZ", layout="wide",page_icon="https://www.apicentre.paymentsnz.co.nz/static/apicentre-favicon.ico")
+st.set_page_config(page_title="Finicity", layout="wide",page_icon="https://prod-finweb-frontend.s3-us-west-2.amazonaws.com/wp-content/uploads-new/2022/08/17210450/mc_symbol.svg")
 
 import matplotlib.pyplot as plt
 from io import BytesIO
@@ -25,8 +25,8 @@ if 'token' not in st.session_state:
 
 # --------------------------------------------------------------------------------
 
-# base_url = 'https://pnz-ai-assistant.azurewebsites.net/'
-base_url = 'http://localhost:8080'
+base_url = 'https://finicity-ai-assistant.azurewebsites.net'
+# base_url = 'http://localhost:8080'
 
 #---------------------------------------------------------------------------------
 
@@ -40,15 +40,15 @@ with st.sidebar:
     # </div>
     # """, unsafe_allow_html=True)
 
-    # logo_image = Image.open('finicity_logo.png')
+    logo_image = Image.open('finicity_logo.png')
 
-    # st.image(logo_image)
+    st.image(logo_image)
     
     partner_id = st.text_input("Partner Id", "Enter partner id...")
     partner_secret = st.text_input("Partner Secret", "Enter partner secret...")
     finicity_app_key = st.text_input('Finicity-App-Key', 'Enter finicity app key...')
           
-    if st.button("Get Auth token"):        
+    if st.button(":white[Get Auth token]"):        
         if partner_id and partner_secret and finicity_app_key != None:
 
             headers = {
@@ -73,6 +73,8 @@ with st.sidebar:
                 messageboard.error("Authentication failed, please try again", icon ='🚨') 
                 time.sleep(3)
                 messageboard.empty() 
+    
+    st.markdown("""<style> p { color: #ffffff }""", unsafe_allow_html=True)
 
     st.markdown("""
         <style> 
@@ -158,7 +160,7 @@ with st.sidebar:
                     time.sleep(3)
                     messageboard.empty() 
         else:
-            messageboard.warning("To use this application, please login...") 
+            messageboard.warning("To use this application, please get auth token...") 
             time.sleep(3)
             messageboard.empty() 
 
