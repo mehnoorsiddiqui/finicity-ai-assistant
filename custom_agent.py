@@ -17,7 +17,7 @@ from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
 os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"]
 
-pd.set_option('display.max_rows', None)
+pd.set_option('display.max_rows', 20)
 pd.set_option('display.max_columns', None)
 
 memory_key = "chat_history"
