@@ -124,7 +124,7 @@ with st.sidebar:
                             'Transaction Escrow Amount': entry['escrowAmount'] if 'escrowAmount' in entry else None,
                             'Transaction Fee Amount': entry['feeAmount'] if 'feeAmount' in entry else None,
                             'Transaction Unit Quantity': entry['unitQuantity'] if 'unitQuantity' in entry else None,
-                            'Transaction Unit Action': entry['unitAction'] if 'unitAction' in entry else None,
+                            # 'Transaction Unit Action': entry['unitAction'] if 'unitAction' in entry else None,
                             'Transaction Posted Date': datetime.datetime.utcfromtimestamp(int(entry['postedDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),
                             'Transaction Date': datetime.datetime.utcfromtimestamp(int(entry['transactionDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),                    
                             'Transaction PayeeName': entry['categorization']['normalizedPayeeName'] if 'normalizedPayeeName' in entry['categorization'] else None,
