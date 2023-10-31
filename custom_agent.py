@@ -2,7 +2,7 @@ from langchain.agents import  AgentExecutor
 from langchain.agents import OpenAIFunctionsAgent
 from langchain.agents import initialize_agent, AgentType, Tool
 from langchain.prompts import MessagesPlaceholder
-from langchain.tools import PythonAstREPLTool
+from langchain_experimental.tools import PythonAstREPLTool
 import pandas as pd
 from langchain.chat_models import ChatOpenAI
 from pydantic import BaseModel, Field
@@ -14,8 +14,18 @@ import os
 from langchain.schema.messages import SystemMessage
 import streamlit as st
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 
-os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"]
+# Set up the Key Vault client
+
+credential = DefaultAzureCredential()
+vault_url = "https://finicity-openai-key.vault.azure.net"
+client = SecretClient(vault_url= vault_url, credential=credential)
+
+os.environ["OPENAI_API_KEY"] =  client.get_secret("openai-key").value
+
+# os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
 pd.set_option('display.max_rows', 20)
 pd.set_option('display.max_columns', None)

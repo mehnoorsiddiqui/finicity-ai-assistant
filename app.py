@@ -34,12 +34,6 @@ base_url = 'https://finicity-ai-assistant.azurewebsites.net'
 
 with st.sidebar:
 
-    # st.sidebar.markdown("""
-    # <div >
-    #     <h3 style="color: white;font-family: monospace; font-size: 1.75rem">payments<span style="color: #F8882B;font-family: monospace;font-size: 1.75rem">nz<span/></h3>
-    # </div>
-    # """, unsafe_allow_html=True)
-
     logo_image = Image.open('finicity_logo.png')
 
     st.image(logo_image)
@@ -115,22 +109,22 @@ with st.sidebar:
                             'Account ID': int(entry['accountId']),
                             'Transaction ID': int(entry['id']) if 'id' in entry else None,
                             'Transaction Amount': entry['amount'] if 'amount' in entry else None,
-                            'Transaction Status': entry['status'] if 'status' in entry else None,
-                            'Transaction Description': entry['description'] if 'description' in entry else None,
-                            'Transaction Memo': entry['memo'] if 'memo' in entry else None,
-                            'Transaction Status': entry['status'] if 'status' in entry else None,
-                            'Transaction Interest Amount': entry['interestAmount'] if 'interestAmount' in entry else None,
-                            'Transaction Principal Amount': entry['principalAmount'] if 'principalAmount' in entry else None,
-                            'Transaction Escrow Amount': entry['escrowAmount'] if 'escrowAmount' in entry else None,
-                            'Transaction Fee Amount': entry['feeAmount'] if 'feeAmount' in entry else None,
-                            'Transaction Unit Quantity': entry['unitQuantity'] if 'unitQuantity' in entry else None,
-                            # 'Transaction Unit Action': entry['unitAction'] if 'unitAction' in entry else None,
-                            'Transaction Posted Date': datetime.datetime.utcfromtimestamp(int(entry['postedDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),
-                            'Transaction Date': datetime.datetime.utcfromtimestamp(int(entry['transactionDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),                    
-                            'Transaction PayeeName': entry['categorization']['normalizedPayeeName'] if 'normalizedPayeeName' in entry['categorization'] else None,
-                            'Transaction Category': entry['categorization']['category'] if 'category' in entry['categorization'] else None,
-                            'Transaction Best Representation': entry['categorization']['bestRepresentation'] if 'bestRepresentation' in entry['categorization'] else None,
-                            'Transaction Country': entry['categorization']['country'] if 'country' in entry['categorization'] else None
+                            'Status': entry['status'] if 'status' in entry else None,
+                            'Description': entry['description'] if 'description' in entry else None,
+                            'Posted Date': datetime.datetime.utcfromtimestamp(int(entry['postedDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),
+                            'Status': entry['status'] if 'status' in entry else None,                           
+                            'Memo': entry['memo'] if 'memo' in entry else None,
+                            'Transaction Date': datetime.datetime.utcfromtimestamp(int(entry['transactionDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),                                                
+                            'Interest Amount': entry['interestAmount'] if 'interestAmount' in entry else None,
+                            'Principal Amount': entry['principalAmount'] if 'principalAmount' in entry else None,
+                            'Escrow Amount': entry['escrowAmount'] if 'escrowAmount' in entry else None,
+                            'Fee Amount': entry['feeAmount'] if 'feeAmount' in entry else None,
+                            'Unit Quantity': entry['unitQuantity'] if 'unitQuantity' in entry else None,
+                            'Unit Action': entry['unitAction'] if 'unitAction' in entry else None,
+                            'PayeeName': entry['categorization']['normalizedPayeeName'] if 'normalizedPayeeName' in entry['categorization'] else None,
+                            'Category': entry['categorization']['category'] if 'category' in entry['categorization'] else None,
+                            'Best Representation': entry['categorization']['bestRepresentation'] if 'bestRepresentation' in entry['categorization'] else None,
+                            'Country': entry['categorization']['country'] if 'country' in entry['categorization'] else None
                         }
                         for entry in transactionsData
                     ]
