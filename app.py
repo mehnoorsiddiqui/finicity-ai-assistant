@@ -38,9 +38,9 @@ with st.sidebar:
 
     st.image(logo_image)
     
-    partner_id = st.text_input("Partner Id", "Enter partner id...")
-    partner_secret = st.text_input("Partner Secret", "Enter partner secret...")
-    finicity_app_key = st.text_input('Finicity-App-Key', 'Enter finicity app key...')
+    partner_id = st.text_input("Partner Id", "2445583449522")
+    partner_secret = st.text_input("Partner Secret", "Ls30G44dezb6AbOmZWOL")
+    finicity_app_key = st.text_input('Finicity-App-Key', 'bb78291718b6eb8d078e8651f6d7998d')
           
     if st.button(":white[Generate Auth token]"):        
         if partner_id and partner_secret and finicity_app_key != None:

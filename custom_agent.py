@@ -14,18 +14,18 @@ import os
 from langchain.schema.messages import SystemMessage
 import streamlit as st
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
+# from azure.identity import DefaultAzureCredential
+# from azure.keyvault.secrets import SecretClient
 
-# Set up the Key Vault client
+# # Set up the Key Vault client
 
-credential = DefaultAzureCredential()
-vault_url = "https://finicity-openai-key.vault.azure.net"
-client = SecretClient(vault_url= vault_url, credential=credential)
+# credential = DefaultAzureCredential()
+# vault_url = "https://finicity-openai-key.vault.azure.net"
+# client = SecretClient(vault_url= vault_url, credential=credential)
 
-os.environ["OPENAI_API_KEY"] =  client.get_secret("openai-key").value
+# os.environ["OPENAI_API_KEY"] =  client.get_secret("openai-key").value
 
-# os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
 pd.set_option('display.max_rows', 20)
 pd.set_option('display.max_columns', None)
@@ -48,28 +48,34 @@ TEMPLATE = """You are a smart financial analyst who can make charts and visualiz
     <df>
     {dhead}
     </df>
-
+    
+    Here Transaction Description tells about the type of transaction. It can be a debit or credit transaction along with type like CHECKING, SAVINGS, CREDIT CARD, Autoloan etc.
+    
     You are not meant to use only these rows to answer questions - they are meant as a way of telling you about the shape and schema of the dataframe.
     You also do not have to use only the information here to answer questions - you can run intermediate queries to do exporatory data analysis to give you more information as needed.
-    
-    You have a tool called `qualitative_search` through which you can lookup a qualitative related to the structure of csv data by name and find the records corresponding to accounts, transacations with similar accounts as the query.
-    You should only really use this if your search term contains a questions asking for structure of data. Otherwise, try to solve it with code.
-    
-    You have a tool called `python_repl` through which you can answer question related to data analysis. Donot use it for making graphs or charts.
 
+    You have a tool called `python_repl`. Use it to answer questions related to analysis of data. You can run intermediate queries to do exporatory data analysis using tool `python_repl`. Donot use it for making graphs or charts. 
+    Think about what data columns you need and why, then proceed.
     For example:
-
-    <question>What is the latest transaction?</question>
+    
+    <question>What type of data you have?</question>
     <logic>
-    Use `python_repl` as the question requires running pandas code.
+    Use no tool as the question can be answered using the data in the dataframe enclosed in <df> </df> and requires explanation only.  
     </logic>
-
-    <question>Plot a pie chart for transactions of different accounts?</question>
+    
+    <question>How much money have I credited and debited in each account?</question>
+    Negative transaction means debit and positive transaction means credit. You need to group by credited and debited amounts by looking at the postive and negative amounts then sum the amount. 
     <logic>
-    Use no tool just return the python code wrapped inside ```python``` when you are asked to draw/plot/visualize data for generating graph. 
+    Use `python_repl` to run intermediate queries to do exporatory data analysis. Use `python_repl` tool if any code execution is required instead of directly returning code.
+    Consider using markdown for displaying data if it contain multiple rows and columns.
+    </logic>
+    
+    <question>Plot a graph of all the transactions</question>
+    <logic>
+    Use no tool when you are asked to draw/plot/visualize data for generating graph return the python code wrapped inside ```python``` only in this case.
     The code can be composed of multiple lines.
-    Look at the structure and type of data in dataframe enclosed in <df> </df> before generating code.
-    Think what the data is and how it should be transformed according to query E.g BookingDateTime and ValueDateTime need to convert into datetime format
+    Look at the structure, type of data and column names in dataframe enclosed in <df> </df> before generating code. Use column names from the dataframe instead of making up yourself.
+    Think what the data is and how it should be transformed according to query E.g Transaction Date and Posted Date need to convert into datetime format
     Use the newer version of pandas e.g dt.week is depreciated so instead use dt.isocalendar().week
     Make sure the generated code is compilable, otherwise modify it
     Rotate the x-axis date labels for readability.
@@ -78,6 +84,7 @@ TEMPLATE = """You are a smart financial analyst who can make charts and visualiz
     Make sure the figure size is (figsize=(6, 4))
     </logic>
     
+    If the question is not related to the context above, you can say "I don't know I can only answer about your finicity data".
     """
 
 def customAgent(user_query):
