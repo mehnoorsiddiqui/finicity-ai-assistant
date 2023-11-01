@@ -14,6 +14,7 @@ from custom_agent import customAgent
 from utils import check_token
 from PIL import Image
 
+
 st.title("Talk to your bank account")
 
 messageboard = st.empty()
@@ -44,31 +45,33 @@ with st.sidebar:
           
     if st.button(":white[Generate Auth token]"):        
         if partner_id and partner_secret and finicity_app_key != None:
+            
+                headers = {
+                    "Content-Type": "application/json"                
+                }
+                body = {
+                    "partnerId": partner_id,
+                    "partnerSecret": partner_secret,
+                    "finicityAppKey": finicity_app_key
+                }
+                createToken = requests.post(base_url + '/api/createToken',json=body, headers=headers)   
+                if createToken.status_code == 200:
+                    token = createToken.json()["token"]
+                    print(f"Token: {token}")
+                    if token != None:
+                        # token is valid for 2 hours as finicity best practice is to generate new token after 90 minutes                    
+                        current_time = int(time.time())
+                        token_expiry_time = current_time + (90 * 60) 
+                        st.session_state.token = {'value': token, 'expiry': token_expiry_time}                      
 
-            headers = {
-                "Content-Type": "application/json"                
-            }
-            body = {
-                "partnerId": partner_id,
-                "partnerSecret": partner_secret,
-                "finicityAppKey": finicity_app_key
-            }
-            createToken = requests.post(base_url + '/api/createToken',json=body, headers=headers)   
-            if createToken.status_code == 200:
-                token = createToken.json()["token"]
-                print(f"Token: {token}")
-                if token != None:
-                    # token is valid for 2 hours but as finicity best practice generate new token after 90 minutes                    
-                    current_time = int(time.time())
-                    token_expiry_time = current_time + (90 * 60) 
-                    st.session_state.token = {'value': token, 'expiry': token_expiry_time} 
-                    messageboard.success('Auth token generated successfully', icon="🎉") 
+                        messageboard.success('Auth token generated successfully', icon="🎉") 
+                        time.sleep(3)
+                        messageboard.empty()                            
+                else:
+                    messageboard.error("Authentication failed, please try again", icon ='🚨') 
                     time.sleep(3)
-                    messageboard.empty()                
-            else:
-                messageboard.error("Authentication failed, please try again", icon ='🚨') 
-                time.sleep(3)
-                messageboard.empty() 
+                    messageboard.empty() 
+
     
     st.markdown("""  <style> div.st-emotion-cache-hsn27d e1nzilvr5>p { color: #ffffff }  <style> """, unsafe_allow_html=True)
 
@@ -83,83 +86,103 @@ with st.sidebar:
         }
         </style>""", unsafe_allow_html=True)
 
-    if st.button(":white[Get accounts and transactions data]", type="secondary"):
-        if (check_token(st.session_state.token)):
-                authToken = st.session_state.token.get('value')
-                       
-                headers = {
-                "Content-Type": "application/json"                
-                }
-                body = {
+    if (check_token(st.session_state.token)):
+
+        authToken = st.session_state.token.get('value')
+        headers = {
+                    "Content-Type": "application/json"                
+                }                         
+        # call get cutomers 
+        customer_body = {
+                            "authToken": authToken,
+                            "finicityAppKey": finicity_app_key                                
+        }
+        customers= requests.post(base_url + '/api/customers',json=customer_body, headers=headers)  
+        customers_data = customers.json()['customers'] 
+        
+        options = [item['username'] for item in customers_data] 
+        options.insert(0, "Select a customer")  
+
+        # Generate the dropdown
+        selected_option = st.selectbox('Select a customer', options)
+        if selected_option == "None":
+            selected_id = None
+        else:
+            selected_id = next((item['id'] for item in customers_data if item['username'] == selected_option), None)
+        if selected_id != None:
+
+            body = {
                     "authToken": authToken,
                     "finicityAppKey": finicity_app_key,
-                    "customerId": '6001391193'
-                }
-                
-                transactions= requests.post(base_url + '/api/transactions',json=body, headers=headers)                
-                accounts = requests.post(base_url + '/api/accounts',json=body,headers=headers)    
-                 
-                if transactions.status_code  == 200:
-                    
-                    transactionsData = transactions.json()['transactions']       
-                    accountsData = accounts.json()['accounts']
-                                
-                    selectedTransactionsData = [
-                        {
-                            'Account ID': int(entry['accountId']),
-                            'Transaction ID': int(entry['id']) if 'id' in entry else None,
-                            'Transaction Amount': entry['amount'] if 'amount' in entry else None,
-                            'Status': entry['status'] if 'status' in entry else None,
-                            'Description': entry['description'] if 'description' in entry else None,
-                            'Posted Date': datetime.datetime.utcfromtimestamp(int(entry['postedDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),
-                            'Status': entry['status'] if 'status' in entry else None,                           
-                            'Memo': entry['memo'] if 'memo' in entry else None,
-                            'Transaction Date': datetime.datetime.utcfromtimestamp(int(entry['transactionDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),                                                
-                            'Interest Amount': entry['interestAmount'] if 'interestAmount' in entry else None,
-                            'Principal Amount': entry['principalAmount'] if 'principalAmount' in entry else None,
-                            'Escrow Amount': entry['escrowAmount'] if 'escrowAmount' in entry else None,
-                            'Fee Amount': entry['feeAmount'] if 'feeAmount' in entry else None,
-                            'Unit Quantity': entry['unitQuantity'] if 'unitQuantity' in entry else None,
-                            'Unit Action': entry['unitAction'] if 'unitAction' in entry else None,
-                            'PayeeName': entry['categorization']['normalizedPayeeName'] if 'normalizedPayeeName' in entry['categorization'] else None,
-                            'Category': entry['categorization']['category'] if 'category' in entry['categorization'] else None,
-                            'Best Representation': entry['categorization']['bestRepresentation'] if 'bestRepresentation' in entry['categorization'] else None,
-                            'Country': entry['categorization']['country'] if 'country' in entry['categorization'] else None
-                        }
-                        for entry in transactionsData
-                    ]
-                
-                    selectedAccountsData = [
-                        {
-                            'Account ID': int(entry['id']),    
-                            'Account Number': entry['number'] if 'number' in entry else None,
-                            'Account Name': entry['name'] if 'name' in entry else None,                                                    
-                            'Account Type': entry['type'] if 'type' in entry else None,
-                            'Account Status': entry['status'] if 'status' in entry else None,                                            
-                        }
-                        for entry in accountsData
-                    ]
+                    "customerId": selected_id
+                }                    
+            accounts = requests.post(base_url + '/api/accounts',json=body,headers=headers)   
+            if  accounts.status_code == 200:     
+                accountsData = accounts.json()['accounts']
+                if len(accountsData)>0 : 
+                    transactions= requests.post(base_url + '/api/transactions',json=body, headers=headers)                                                      
+                    if  transactions.status_code == 200: 
+                        transactionsData = transactions.json()['transactions']   
+                        if  len(transactionsData)>0 : 
+                            selectedTransactionsData = [
+                                                    {
+                                                        'Account ID': int(entry['accountId']),
+                                                        'Transaction ID': int(entry['id']) if 'id' in entry else None,
+                                                        'Transaction Amount': entry['amount'] if 'amount' in entry else None,
+                                                        'Status': entry['status'] if 'status' in entry else None,
+                                                        'Description': entry['description'] if 'description' in entry else None,
+                                                        'Posted Date': datetime.datetime.utcfromtimestamp(int(entry['postedDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),
+                                                        'Status': entry['status'] if 'status' in entry else None,                           
+                                                        'Memo': entry['memo'] if 'memo' in entry else None,
+                                                        'Transaction Date': datetime.datetime.utcfromtimestamp(int(entry['transactionDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),                                                
+                                                        'Interest Amount': entry['interestAmount'] if 'interestAmount' in entry else None,
+                                                        'Principal Amount': entry['principalAmount'] if 'principalAmount' in entry else None,
+                                                        'Escrow Amount': entry['escrowAmount'] if 'escrowAmount' in entry else None,
+                                                        'Fee Amount': entry['feeAmount'] if 'feeAmount' in entry else None,
+                                                        'Unit Quantity': entry['unitQuantity'] if 'unitQuantity' in entry else None,
+                                                        'Unit Action': entry['unitAction'] if 'unitAction' in entry else None,
+                                                        'PayeeName': entry['categorization']['normalizedPayeeName'] if 'normalizedPayeeName' in entry['categorization'] else None,
+                                                        'Category': entry['categorization']['category'] if 'category' in entry['categorization'] else None,
+                                                        'Best Representation': entry['categorization']['bestRepresentation'] if 'bestRepresentation' in entry['categorization'] else None,
+                                                        'Country': entry['categorization']['country'] if 'country' in entry['categorization'] else None
+                                                    }
+                                                    for entry in transactionsData
+                                                ]
+                                            
+                            selectedAccountsData = [
+                                                    {
+                                                        'Account ID': int(entry['id']),    
+                                                        'Account Number': entry['number'] if 'number' in entry else None,
+                                                        'Account Name': entry['name'] if 'name' in entry else None,                                                    
+                                                        'Account Type': entry['type'] if 'type' in entry else None,
+                                                        'Account Status': entry['status'] if 'status' in entry else None,                                            
+                                                    }
+                                                    for entry in accountsData
+                                                ]
+                                            
+                            transactionsDataFrame = pd.DataFrame(selectedTransactionsData)            
+                                                                    
+                            accountsDataFrame = pd.DataFrame(selectedAccountsData)
+                                            
+                            merged_df = transactionsDataFrame.merge(accountsDataFrame, left_on='Account ID', right_on='Account ID', how='inner')
+                                            
+                            merged_df.to_csv('finicity_data.csv', index=False) 
 
-                    transactionsDataFrame = pd.DataFrame(selectedTransactionsData)            
-                                        
-                    accountsDataFrame = pd.DataFrame(selectedAccountsData)
-
-                    merged_df = transactionsDataFrame.merge(accountsDataFrame, left_on='Account ID', right_on='Account ID', how='inner')
-
-                    merged_df.to_csv('finicity_data.csv', index=False)
-                
-                    messageboard.success('Data fetched successfully', icon="🎉") 
+                            messageboard.success('Data fetched successfully', icon="🎉") 
+                            time.sleep(3)
+                            messageboard.empty()    
+                        else: 
+                            messageboard.error("No transactions found for this customer", icon ='🚨') 
+                            time.sleep(3)
+                            messageboard.empty() 
+                    else: 
+                        messageboard.error("Failed to fetch transactions. Please try again", icon ='🚨') 
+                        time.sleep(3)
+                        messageboard.empty() 
+                else: 
+                    messageboard.error("No data found. Please select a different account", icon ='🚨') 
                     time.sleep(3)
                     messageboard.empty() 
-                else:                            
-                    messageboard.error("Failed to fetch data, please try again", icon ='🚨') 
-                    time.sleep(3)
-                    messageboard.empty() 
-        else:
-            messageboard.warning("To use this application, please generate auth token...") 
-            time.sleep(3)
-            messageboard.empty() 
-
 #---------------------------------------------------------------------------------
 
 # Initialize chat history
