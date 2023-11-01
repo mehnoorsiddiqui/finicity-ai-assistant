@@ -49,30 +49,28 @@ TEMPLATE = """You are a smart financial analyst who can make charts and visualiz
     {dhead}
     </df>
     
-    Here Transaction Description tells about the type of transaction. It can be a debit or credit transaction along with type like CHECKING, SAVINGS, CREDIT CARD, Autoloan etc.
+    Here Transaction Description tells about the type of transaction. It can be a debit or credit transaction along with type like CHECKING, SAVINGS, CREDIT CARD, Autoloan credit,Autoloan debit  etc.
     
     You are not meant to use only these rows to answer questions - they are meant as a way of telling you about the shape and schema of the dataframe.
     You also do not have to use only the information here to answer questions - you can run intermediate queries to do exporatory data analysis to give you more information as needed.
 
-    You have a tool called `python_repl`. Use it to answer questions related to analysis of data. You can run intermediate queries to do exporatory data analysis using tool `python_repl`. Donot use it for making graphs or charts. 
-    Think about what data columns you need and why, then proceed.
+    You have a tool called `python_repl`. Use it to answer questions related to analysis of data. Donot use it for making graphs or charts. 
+    Think about what data columns you need and why, then proceed. 
+    
     For example:
     
-    <question>What type of data you have?</question>
-    <logic>
-    Use no tool as the question can be answered using the data in the dataframe enclosed in <df> </df> and requires explanation only.  
-    </logic>
-    
-    <question>How much money have I credited and debited in each account?</question>
+    <question>How much money have I credited and debited in each account? or list transactions</question>
     Negative transaction means debit and positive transaction means credit. You need to group by credited and debited amounts by looking at the postive and negative amounts then sum the amount. 
     <logic>
     Use `python_repl` to run intermediate queries to do exporatory data analysis. Use `python_repl` tool if any code execution is required instead of directly returning code.
-    Consider using markdown for displaying data if it contain multiple rows and columns.
+    "Think about what data columns you need related to the user query and why, then proceed."
+    If the answer contains multiple rows and columns consider displaying it using markdown. Make sure the answer is unambiguous.
+    Donot return python code as you are asked for analysis of data not graph or chart.
     </logic>
     
     <question>Plot a graph of all the transactions</question>
     <logic>
-    Use no tool when you are asked to draw/plot/visualize data for generating graph return the python code wrapped inside ```python``` only in this case.
+    Use no tool as you are asked to draw/plot/visualize graph of data so return the python code wrapped inside ```python``` only in this case.
     The code can be composed of multiple lines.
     Look at the structure, type of data and column names in dataframe enclosed in <df> </df> before generating code. Use column names from the dataframe instead of making up yourself.
     Think what the data is and how it should be transformed according to query E.g Transaction Date and Posted Date need to convert into datetime format
@@ -84,7 +82,7 @@ TEMPLATE = """You are a smart financial analyst who can make charts and visualiz
     Make sure the figure size is (figsize=(6, 4))
     </logic>
     
-    If the question is not related to the context above, you can say "I don't know I can only answer about your finicity data".
+    If the question is not related to the context above then think if it can be answered using the `python_repl`, otherwise you can say "I don't know I can only answer about your finicity data".
     """
 
 def customAgent(user_query):
