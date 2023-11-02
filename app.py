@@ -34,8 +34,8 @@ if 'customersdata' not in st.session_state:
     st.session_state.customersdata = []
 # --------------------------------------------------------------------------------
 
-base_url = 'https://finicity-ai-assistant.azurewebsites.net'
-# base_url = 'http://localhost:8080'
+# base_url = 'https://finicity-ai-assistant.azurewebsites.net'
+base_url = 'http://localhost:8080'
 
 #---------------------------------------------------------------------------------
 def generate_token(partner_id, partner_secret,finicity_app_key):
@@ -106,8 +106,8 @@ def update_params():
                                                             'Status': entry['status'] if 'status' in entry else None,
                                                             'Description': entry['description'] if 'description' in entry else None,
                                                             'Posted Date': datetime.datetime.utcfromtimestamp(int(entry['postedDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),
-                                                            'Status': entry['status'] if 'status' in entry else None,                           
-                                                            'Memo': entry['memo'] if 'memo' in entry else None,
+                                                            'Status': entry['status'] if 'status' in entry else None,   
+                                                            'Category': entry['categorization']['category'] if 'category' in entry['categorization'] else None,                                                                                   
                                                             'Transaction Date': datetime.datetime.utcfromtimestamp(int(entry['transactionDate'])).strftime('%Y-%m-%dT%H:%M:%S.000Z'),                                                
                                                             'Interest Amount': entry['interestAmount'] if 'interestAmount' in entry else None,
                                                             'Principal Amount': entry['principalAmount'] if 'principalAmount' in entry else None,
@@ -116,7 +116,7 @@ def update_params():
                                                             'Unit Quantity': entry['unitQuantity'] if 'unitQuantity' in entry else None,
                                                             'Unit Action': entry['unitAction'] if 'unitAction' in entry else None,
                                                             'PayeeName': entry['categorization']['normalizedPayeeName'] if 'normalizedPayeeName' in entry['categorization'] else None,
-                                                            'Category': entry['categorization']['category'] if 'category' in entry['categorization'] else None,
+                                                            'Memo': entry['memo'] if 'memo' in entry else None,
                                                             'Best Representation': entry['categorization']['bestRepresentation'] if 'bestRepresentation' in entry['categorization'] else None,
                                                             'Country': entry['categorization']['country'] if 'country' in entry['categorization'] else None
                                                         }

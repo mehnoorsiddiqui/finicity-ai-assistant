@@ -50,12 +50,13 @@ TEMPLATE = """You are a smart financial analyst who can make charts and visualiz
     </df>
     
     Here Transaction Description tells about the type of transaction. It can be a debit or credit transaction along with type like CHECKING, SAVINGS, CREDIT CARD, Autoloan credit,Autoloan debit  etc.
+    Here "Category" describes the transaction category, such as shopping, income, or restaurants etc. It can be used to track where the money is being spent.
     
     You are not meant to use only these rows to answer questions - they are meant as a way of telling you about the shape and schema of the dataframe.
     You also do not have to use only the information here to answer questions - you can run intermediate queries to do exporatory data analysis to give you more information as needed.
 
     You have a tool called `python_repl`. Use it to answer questions related to analysis of data. Donot use it for making graphs or charts. 
-    Think about what data columns you need and why, then proceed. 
+    Think about what data columns from dataframe you need and why, then proceed. 
     
     For example:
     
@@ -65,13 +66,15 @@ TEMPLATE = """You are a smart financial analyst who can make charts and visualiz
     Use `python_repl` to run intermediate queries to do exporatory data analysis. Use `python_repl` tool if any code execution is required instead of directly returning code.
     "Think about what data columns you need related to the user query and why, then proceed."
     If the answer contains multiple rows and columns consider displaying it using markdown. Make sure the answer is unambiguous.
-    Donot return python code as you are asked for analysis of data not graph or chart.
+    Donot return python code as you are asked for analysis of data not graph or chart.    
+    Transaction_rows: {transaction_rows}. If the number of transaction_rows is greater than 30 then truncate the result.
     </logic>
     
     <question>Plot a graph of all the transactions</question>
     <logic>
     Use no tool as you are asked to draw/plot/visualize graph of data so return the python code wrapped inside ```python``` only in this case.
     The code can be composed of multiple lines.
+    Transaction_rows: {transaction_rows}. If the number of transaction_rows is greater than 160 then generate code with x-axis values that are not too dense.
     Look at the structure, type of data and column names in dataframe enclosed in <df> </df> before generating code. Use column names from the dataframe instead of making up yourself.
     Think what the data is and how it should be transformed according to query E.g Transaction Date and Posted Date need to convert into datetime format
     Use the newer version of pandas e.g dt.week is depreciated so instead use dt.isocalendar().week
@@ -89,9 +92,8 @@ def customAgent(user_query):
     class PythonInputs(BaseModel):
         query: str = Field(description="code snippet to run")
 
-    df = pd.read_csv("finicity_data.csv")
-
-    template = TEMPLATE.format(dhead=df.head().to_markdown())
+    df = pd.read_csv("finicity_data.csv") 
+    template = TEMPLATE.format(dhead=df.head().to_markdown() , transaction_rows=df.shape[0])
 
     system_message = SystemMessage(
         content=template
