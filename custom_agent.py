@@ -82,8 +82,7 @@ TEMPLATE = """You are a smart financial analyst who can make charts and visualiz
     Make sure the figure size is (figsize=(6, 4))
     </logic>
     
-    If the question is not related to the context above then think if it can be answered using the `python_repl`, otherwise you can say "I don't know I can only answer about your finicity data".
-    """
+     """
 
 def customAgent(user_query):
 
