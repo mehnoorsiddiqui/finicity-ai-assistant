@@ -34,8 +34,8 @@ if 'customersdata' not in st.session_state:
     st.session_state.customersdata = []
 # --------------------------------------------------------------------------------
 
-# base_url = 'https://finicity-ai-assistant.azurewebsites.net'
-base_url = 'http://localhost:8080'
+base_url = 'https://finicity-ai-assistant.azurewebsites.net'
+# base_url = 'http://localhost:8080'
 
 #---------------------------------------------------------------------------------
 def generate_token(partner_id, partner_secret,finicity_app_key):
